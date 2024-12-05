@@ -240,6 +240,29 @@
             margin: 15px 0 5px 0;
             color: #333;
         }
+
+        .transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #f5f5f5;
+            display: none;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+    
+        /* 图片容器添加过渡效果 */
+        .images-grid {
+            opacity: 1;
+            transition: opacity 0.15s ease;
+        }
+    
+        .images-grid.fading {
+            opacity: 0;
+        }
     </style>
 </head>
 <body>
@@ -308,6 +331,9 @@
             <!--<div id="selections"></div>-->
         </div>
 
+        <!-- 添加过渡层 -->
+        <div class="transition-overlay"></div>
+        
         <!-- 完成页面 -->
         <div id="completion-page" class="page">
             <div class="completion-content">
@@ -491,45 +517,68 @@
             }
 
             // 处理选择
-            handleSelection(imageId) {
-                if (this.selections.includes(imageId)) {
-                    this.recordTrial(imageId, false);
-                    
+            async handleSelection(imageId) {
+                if (this.isTransitioning) return; // 防止过渡期间重复点击
+                this.isTransitioning = true;
+        
+                const result = this.selections.includes(imageId);
+                
+                // 记录试次数据
+                this.recordTrial(imageId, !result);
+        
+                // 执行过渡动画
+                await this.showTransition();
+        
+                if (result) {
                     if (this.phase === 'test') {
                         this.phase = 'backup';
                         this.selections = [];
                         this.currentTrial = 1;
-                        this.updateDisplay();
                     } else {
                         this.endExperiment();
-                    }
-                    return;
-                }
-
-                this.selections.push(imageId);
-                this.recordTrial(imageId, true);
-
-                if (this.currentTrial >= this.currentSet + 1) {
-                    if (this.phase === 'test') {
-                        this.currentSet++;
-                        this.currentTrial = 1;
-                        this.selections = [];
-                    } else {
-                        this.currentSet++;
-                        this.phase = 'test';
-                        this.currentTrial = 1;
-                        this.selections = [];
-                    }
-                    
-                    if (this.currentSet > 11) {
-                        this.endExperiment();
+                        this.isTransitioning = false;
                         return;
                     }
                 } else {
-                    this.currentTrial++;
+                    this.selections.push(imageId);
+                    
+                    if (this.currentTrial >= this.currentSet + 1) {
+                        if (this.phase === 'test') {
+                            this.currentSet++;
+                            this.currentTrial = 1;
+                            this.selections = [];
+                        } else {
+                            this.currentSet++;
+                            this.phase = 'test';
+                            this.currentTrial = 1;
+                            this.selections = [];
+                        }
+                        
+                        if (this.currentSet > 11) {
+                            this.endExperiment();
+                            this.isTransitioning = false;
+                            return;
+                        }
+                    } else {
+                        this.currentTrial++;
+                    }
                 }
-
+        
                 this.updateDisplay();
+                this.isTransitioning = false;
+            }
+        
+            // 添加过渡动画方法
+            showTransition() {
+                return new Promise(resolve => {
+                    const grid = document.getElementById('images-container');
+                    grid.classList.add('fading');
+                    
+                    setTimeout(() => {
+                        grid.classList.remove('fading');
+                        resolve();
+                    }, 300); // 300ms 的过渡时间
+                });
             }
 
             // 记录试次数据
