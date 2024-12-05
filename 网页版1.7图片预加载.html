@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工作记忆测试</title>
+    <!-- 添加SheetJS库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        /* 容器样式 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 页面样式 */
+        .page {
+            display: none;
+            flex: 1;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 标题样式 */
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        /* 实验界面样式 */
+        .exp-info {
+            text-align: center;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: #fff;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .instruction-box {
+            background: #fff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* 图片网格样式 */
+        .images-grid {
+            display: grid;
+            gap: 10px;
+            margin: 20px auto;
+            justify-content: center;
+            align-content: center;
+            padding: 10px;
+            background: #fff;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        /*矩阵格子大小 */
+        .grid-cell {
+            width: 150px;
+            height: 150px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .grid-cell:hover {
+            transform: scale(1.05);
+        }
+
+        /* 图片占格子的大小 */
+        .grid-cell img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        /* 选择历史样式 */
+        #selections {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 600px;
+        }
+
+        .selection {
+            background: #e9e9e9;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+
+        /* 完成页面样式 */
+        .completion-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 4px;
+            text-align: center;
+            margin: 20px auto;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+        }
+
+        #final-score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin: 20px 0;
+        }
+
+        #results-display {
+            font-family: monospace;
+            white-space: pre-wrap;
+            line-height: 1.5;
+            border: 1px solid #ddd;
+        }
+        
+        .btn {
+            margin: 5px;
+            min-width: 120px;
+        }
+        
+        /* 为结果显示添加滚动条样式 */
+        #results-display::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #results-display::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        #results-display::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        #results-display::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        
+        .results-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            font-size: 14px;
+        }
+        
+        .results-table tr:first-child {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+        
+        .results-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        #results-display h3 {
+            margin: 15px 0 5px 0;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 信息收集页面 -->
+        <div id="info-page" class="page active">
+            <h2>参与者信息</h2>
+            <form id="participant-form">
+                <div class="form-group">
+                    <label for="name">姓名：</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="birthDate">出生年月：</label>
+                    <input type="date" id="birthDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="gender">性别：</label>
+                    <select id="gender" required>
+                        <option value="">请选择</option>
+                        <option value="male">男</option>
+                        <option value="female">女</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="kindergarten">幼儿园：</label>
+                    <input type="text" id="kindergarten" required>
+                </div>
+                <div class="form-group">
+                    <label for="className">班级：</label>
+                    <input type="text" id="className" required>
+                </div>
+
+                <div class="form-group" id="loading-progress" style="display: none;">
+                    <div class="progress-bar" style="
+                        width: 100%;
+                        height: 20px;
+                        background-color: #f0f0f0;
+                        border-radius: 10px;
+                        overflow: hidden;
+                        margin: 10px 0;">
+                        <div id="progress-fill" style="
+                            width: 0%;
+                            height: 100%;
+                            background-color: #4CAF50;
+                            transition: width 0.3s ease;">
+                        </div>
+                    </div>
+                    <div id="progress-text" style="text-align: center; margin-top: 5px;">
+                        正在加载图片... (0%)
+                    </div>
+                </div>
+
+                <button type="submit" class="btn" id="start-btn">开始实验</button>
+            </form>
+            
+        </div>
+
+        <!-- 实验页面 -->
+        <div id="experiment-page" class="page">
+            <div class="exp-info">
+                <div>组别：<span id="current-set">1</span> 阶段：<span id="current-phase">测试</span></div>
+            </div>
+            <div id="instruction" class="instruction-box"></div>
+            <div id="images-container" class="images-grid"></div>
+            <!--<div id="selections"></div>-->
+        </div>
+
+        <!-- 完成页面 -->
+        <div id="completion-page" class="page">
+            <div class="completion-content">
+                <h2>实验完成</h2>
+                <p>最终得分：<span id="final-score"></span></p>
+                <button class="btn" onclick="experimentManager.exportToExcel()">导出数据</button>
+                <button class="btn" onclick="experimentManager.copyResults()">复制结果</button>
+                <button class="btn" onclick="experimentManager.toggleResults()">查看结果</button>
+                <button class="btn" onclick="location.reload()">开始新实验</button>
+                
+                <!-- 添加结果显示区域 -->
+                <div id="results-display" style="display: none; margin-top: 20px; text-align: left; max-height: 400px; overflow-y: auto; background: #f5f5f5; padding: 15px; border-radius: 4px;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ExperimentManager {
+            constructor() {
+                this.currentSet = 1;
+                this.currentTrial = 1;
+                this.phase = 'test';
+                this.selections = [];
+                this.participantInfo = null;
+                this.experimentData = {
+                    trials: [],
+                    finalScore: null
+                };
+                this.startTime = null;
+                this.trialStartTime = null;
+                this.randomPositions = this.generateAllRandomPositions();
+                this.preloadedImages = new Map();
+                this.isPreloading = false;
+            }
+
+            // 预加载所有图片
+            preloadAllImages() {
+                if (this.isPreloading) return;
+                this.isPreloading = true;
+
+                const loadingProgress = document.getElementById('loading-progress');
+                const progressFill = document.getElementById('progress-fill');
+                const progressText = document.getElementById('progress-text');
+                const startBtn = document.getElementById('start-btn');
+                
+                loadingProgress.style.display = 'block';
+                startBtn.disabled = true;
+
+                let totalImages = 0;
+                let loadedImages = 0;
+                const imagePromises = [];
+
+                // 计算总图片数并创建加载Promise
+                for (let set = 1; set <= 11; set++) {
+                    const imagesInSet = set + 1;
+                    for (let phase of ['test', 'backup']) {
+                        for (let img = 1; img <= imagesInSet; img++) {
+                            totalImages++;
+                            const imgPath = `./images/set_${set}/${phase}/image_${img}.png`;
+                            const promise = new Promise((resolve, reject) => {
+                                const image = new Image();
+                                image.onload = () => {
+                                    loadedImages++;
+                                    const progress = (loadedImages / totalImages * 100).toFixed(1);
+                                    progressFill.style.width = `${progress}%`;
+                                    progressText.textContent = `正在加载图片... (${progress}%)`;
+                                    this.preloadedImages.set(imgPath, image);
+                                    resolve();
+                                };
+                                image.onerror = () => {
+                                    console.error(`Failed to load image: ${imgPath}`);
+                                    reject();
+                                };
+                                image.src = imgPath;
+                            });
+                            imagePromises.push(promise);
+                        }
+                    }
+                }
+
+                return Promise.all(imagePromises)
+                    .then(() => {
+                        progressText.textContent = '图片加载完成！';
+                        startBtn.disabled = false;
+                        this.isPreloading = false;
+                    })
+                    .catch(error => {
+                        progressText.textContent = '部分图片加载失败，请刷新页面重试';
+                        console.error('Image preloading failed:', error);
+                        this.isPreloading = false;
+                    });
+            }
+
+            initialize(participantInfo) {
+                this.participantInfo = participantInfo;
+                this.startTime = Date.now();
+                this.trialStartTime = Date.now();
+                this.updateDisplay();
+            }
+
+
+            
+            // 生成随机位置
+            generateAllRandomPositions() {
+                const positions = {};
+                for (let set = 1; set <= 11; set++) {
+                    positions[set] = {
+                        test: {},
+                        backup: {}
+                    };
+                    const trialCount = set + 1;
+                    for (let trial = 1; trial <= trialCount; trial++) {
+                        positions[set].test[trial] = this.shuffleArray([...Array(trialCount)].map((_, i) => i + 1));
+                        positions[set].backup[trial] = this.shuffleArray([...Array(trialCount)].map((_, i) => i + 1));
+                    }
+                }
+                return positions;
+            }
+
+            // Fisher-Yates 洗牌算法
+            shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            // 计算最优网格尺寸
+            calculateOptimalGrid(count) {
+                if (count <= 2) return { rows: 1, cols: 2 };
+                if (count <= 4) return { rows: 2, cols: 2 };
+                if (count <= 6) return { rows: 2, cols: 3 };
+                if (count <= 9) return { rows: 3, cols: 3 };
+                return { rows: 3, cols: 4 };
+            }
+
+            // 更新图片网格
+            updateImageGrid() {
+                const container = document.getElementById('images-container');
+                container.innerHTML = '';
+        
+                const imageCount = this.currentSet + 1;
+                const gridSize = this.calculateOptimalGrid(imageCount);
+                
+                container.style.gridTemplateColumns = `repeat(${gridSize.cols}, 150px)`;//这里需要对应上面的图片大小进行修改，需要一致
+                container.style.gridTemplateRows = `repeat(${gridSize.rows}, 150px)`;
+        
+                const positions = this.randomPositions[this.currentSet][this.phase][this.currentTrial];
+                
+                for (let i = 0; i < imageCount; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    
+                    const imgPath = `./images/set_${this.currentSet}/${this.phase}/image_${positions[i]}.png`;
+                    const img = this.preloadedImages.get(imgPath).cloneNode(true);
+                    img.alt = `图案 ${positions[i]}`;
+                    
+                    cell.onclick = () => this.handleSelection(positions[i]);
+                    cell.appendChild(img);
+                    container.appendChild(cell);
+                }
+            }
+
+            // 更新指导语
+            showInstructions() {
+                const instruction = document.getElementById('instruction');
+                
+                if (this.currentTrial === 1) {
+                    if (this.currentSet === 1) {
+                        instruction.innerHTML = this.phase === 'test' ?
+                            '第一组 - 测试阶段<br>请从这些图案中选择一个' :
+                            '第一组 - 备选阶段<br>让我们再试一次：<br>请从这些图案中选择一个';
+                    } else {
+                        instruction.innerHTML = `第 ${this.currentSet} 组 - ${this.phase === 'test' ? '测试' : '备选'}阶段<br>请从这些图案中选择一个`;
+                    }
+                } else {
+                    instruction.innerHTML = '请选择一个没有选择过的图案';
+                }
+            }
+
+            // 处理选择
+            handleSelection(imageId) {
+                if (this.selections.includes(imageId)) {
+                    this.recordTrial(imageId, false);
+                    
+                    if (this.phase === 'test') {
+                        this.phase = 'backup';
+                        this.selections = [];
+                        this.currentTrial = 1;
+                        this.updateDisplay();
+                    } else {
+                        this.endExperiment();
+                    }
+                    return;
+                }
+
+                this.selections.push(imageId);
+                this.recordTrial(imageId, true);
+
+                if (this.currentTrial >= this.currentSet + 1) {
+                    if (this.phase === 'test') {
+                        this.currentSet++;
+                        this.currentTrial = 1;
+                        this.selections = [];
+                    } else {
+                        this.currentSet++;
+                        this.phase = 'test';
+                        this.currentTrial = 1;
+                        this.selections = [];
+                    }
+                    
+                    if (this.currentSet > 11) {
+                        this.endExperiment();
+                        return;
+                    }
+                } else {
+                    this.currentTrial++;
+                }
+
+                this.updateDisplay();
+            }
+
+            // 记录试次数据
+            recordTrial(imageId, correct) {
+                const trialData = {
+                    set: this.currentSet,
+                    phase: this.phase,
+                    trial: this.currentTrial,
+                    selection: imageId,
+                    correct: correct,
+                    timestamp: new Date().toISOString(),
+                    reactionTime: Date.now() - this.trialStartTime,
+                    totalSelections: this.selections.length,
+                    selectionHistory: [...this.selections]
+                };
+                
+                this.experimentData.trials.push(trialData);
+                this.trialStartTime = Date.now();
+            }
+
+
+            // 格式化结果数据
+            formatResults() {
+                let result = '';
+                
+                // 1. 参与者信息表头
+                result += '参与者信息表\n';
+                result += '姓名,出生日期,性别,幼儿园,班级\n';
+                result += `${this.participantInfo.name},${this.participantInfo.birthDate},${this.participantInfo.gender === 'male' ? '男' : '女'},${this.participantInfo.kindergarten},${this.participantInfo.className}\n\n`;
+                
+                // 2. 试次数据表头
+                result += '试次数据表\n';
+                result += '区组,阶段,试次,选择图片,是否正确,反应时间_毫秒,已选择数量,选择历史,时间戳\n';
+                // 试次数据行
+                this.experimentData.trials.forEach(trial => {
+                    result += `${trial.set},`;
+                    result += `${trial.phase === 'test' ? '测试' : '备选'},`;
+                    result += `${trial.trial},`;
+                    result += `${trial.selection},`;
+                    result += `${trial.correct ? '正确' : '错误'},`;
+                    result += `${trial.reactionTime},`;
+                    result += `${trial.totalSelections},`;
+                    result += `${trial.selectionHistory.join('|')},`;
+                    result += `${trial.timestamp}\n`;
+                });
+                result += '\n';
+                
+                // 3. 汇总数据表头
+                result += '汇总数据表\n';
+                result += '最终分数,完成时间,总用时_秒,最后完成区组,最后阶段,总试次数,正确试次数,平均反应时间_秒\n';
+                // 汇总数据行
+                result += `${this.experimentData.finalScore},`;
+                result += `${new Date().toLocaleString()},`;
+                result += `${Math.round((Date.now() - this.startTime) / 1000)},`;
+                result += `${this.currentSet},`;
+                result += `${this.phase === 'test' ? '测试' : '备选'},`;
+                result += `${this.experimentData.trials.length},`;
+                result += `${this.experimentData.trials.filter(t => t.correct).length},`;
+                result += `${(this.experimentData.trials.reduce((sum, t) => sum + t.reactionTime, 0) / 
+                            this.experimentData.trials.length / 1000).toFixed(2)}\n`;
+                
+                return result;
+            }
+
+            // 复制结果到剪贴板
+            async copyResults() {
+                try {
+                    const text = this.formatResults();
+                    await navigator.clipboard.writeText(text);
+                    alert('结果已复制到剪贴板！');
+                } catch (err) {
+                    alert('复制失败: ' + err.message);
+                    console.error('复制错误:', err);
+                }
+            }
+
+            // 切换显示/隐藏结果
+            toggleResults() {
+                const resultsDisplay = document.getElementById('results-display');
+                if (resultsDisplay.style.display === 'none') {
+                    // 将CSV格式转换为HTML表格进行显示
+                    const lines = this.formatResults().split('\n');
+                    let htmlContent = '';
+                    let currentTable = '';
+                    
+                    lines.forEach(line => {
+                        if (line.trim() === '') {
+                            if (currentTable) {
+                                htmlContent += currentTable + '</table><br>';
+                                currentTable = '';
+                            }
+                        } else if (line.endsWith('表')) {
+                            if (currentTable) {
+                                htmlContent += currentTable + '</table><br>';
+                            }
+                            htmlContent += `<h3>${line}</h3>`;
+                            currentTable = '<table class="results-table">';
+                        } else {
+                            const cells = line.split(',');
+                            currentTable += '<tr>' + cells.map(cell => `<td>${cell}</td>`).join('') + '</tr>';
+                        }
+                    });
+                    
+                    if (currentTable) {
+                        htmlContent += currentTable + '</table>';
+                    }
+                    
+                    resultsDisplay.innerHTML = htmlContent;
+                    resultsDisplay.style.display = 'block';
+                } else {
+                    resultsDisplay.style.display = 'none';
+                }
+            }
+
+            // 导出Excel
+            exportToExcel() {
+                try {
+                    const wb = XLSX.utils.book_new();
+                    
+                    // 参与者信息
+                    const participantData = [{
+                        姓名: this.participantInfo.name,
+                        出生日期: this.participantInfo.birthDate,
+                        性别: this.participantInfo.gender,
+                        幼儿园: this.participantInfo.kindergarten,
+                        班级: this.participantInfo.className
+                    }];
+                    const wsParticipant = XLSX.utils.json_to_sheet(participantData);
+                    XLSX.utils.book_append_sheet(wb, wsParticipant, "参与者信息");
+                    
+                    // 试次数据
+                    const trialData = this.experimentData.trials.map(trial => ({
+                        区组: trial.set,
+                        阶段: trial.phase === 'test' ? '测试' : '备选',
+                        试次: trial.trial,
+                        选择图片: trial.selection,
+                        是否正确: trial.correct ? '正确' : '错误',
+                        反应时间_毫秒: trial.reactionTime,
+                        已选择数量: trial.totalSelections,
+                        选择历史: trial.selectionHistory.join(','),
+                        时间戳: trial.timestamp
+                    }));
+                    const wsTrials = XLSX.utils.json_to_sheet(trialData);
+                    XLSX.utils.book_append_sheet(wb, wsTrials, "试次数据");
+                    
+                    // 汇总数据
+                    const summaryData = [{
+                        最终分数: this.experimentData.finalScore,
+                        完成时间: new Date().toLocaleString(),
+                        总用时_秒: Math.round((Date.now() - this.startTime) / 1000),
+                        最后完成区组: this.currentSet,
+                        最后阶段: this.phase === 'test' ? '测试' : '备选',
+                        总试次数: this.experimentData.trials.length,
+                        正确试次数: this.experimentData.trials.filter(t => t.correct).length,
+                        平均反应时间_秒: (this.experimentData.trials.reduce((sum, t) => sum + t.reactionTime, 0) / 
+                                        this.experimentData.trials.length / 1000).toFixed(2)
+                    }];
+                    const wsSummary = XLSX.utils.json_to_sheet(summaryData);
+                    XLSX.utils.book_append_sheet(wb, wsSummary, "汇总数据");
+                    
+                    // 生成文件名
+                    const fileName = `工作记忆测试_${this.participantInfo.name}_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`;
+                    
+                    // 将工作簿转换为二进制格式
+                    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+                    
+                    // 创建Blob对象
+                    const blob = new Blob([wbout], { type: 'application/octet-stream' });
+                    
+                    // 使用FileSaver保存文件
+                    saveAs(blob, fileName);
+                    
+                } catch (error) {
+                    alert('导出失败: ' + error.message);
+                    console.error('导出错误:', error);
+                }
+            }
+
+            // 更新显示
+            updateDisplay() {
+                document.getElementById('current-set').textContent = this.currentSet;
+                document.getElementById('current-phase').textContent = 
+                    this.phase === 'test' ? '测试' : '备选';
+                
+                this.showInstructions();
+                this.updateImageGrid();
+                //this.updateSelectionHistory();
+            }
+
+            // 更新选择历史
+            //updateSelectionHistory() {
+                //const container = document.getElementById('selections');
+                //container.innerHTML = '';
+                //this.selections.forEach(id => {
+                    //const span = document.createElement('span');
+                    //span.className = 'selection';
+                    //span.textContent = `选择 ${id}`;
+                    //container.appendChild(span);
+                //});
+            //}
+
+            // 结束实验
+            endExperiment() {
+                this.experimentData.finalScore = this.calculateScore();
+                document.querySelectorAll('.page').forEach(page => 
+                    page.classList.remove('active'));
+                document.getElementById('completion-page').classList.add('active');
+                document.getElementById('final-score').textContent = 
+                    this.experimentData.finalScore;
+            }
+
+            // 计算分数
+            calculateScore() {
+                if (this.currentSet > 11 || 
+                    (this.currentSet === 11 && this.phase === 'backup')) {
+                    return 12;
+                }
+                return Math.max(2, this.currentSet);
+            }
+        }
+
+        // 初始化实验管理器
+        document.addEventListener('DOMContentLoaded', () => {
+            window.experimentManager = new ExperimentManager();
+            experimentManager.preloadAllImages();
+        });
+
+        // 处理表单提交
+        document.getElementById('participant-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (experimentManager.isPreloading) {
+                alert('请等待图片加载完成');
+                return;
+            }
+        
+            const participantInfo = {
+                name: document.getElementById('name').value,
+                birthDate: document.getElementById('birthDate').value,
+                gender: document.getElementById('gender').value,
+                kindergarten: document.getElementById('kindergarten').value,
+                className: document.getElementById('className').value
+            };
+            
+            document.querySelectorAll('.page').forEach(page => 
+                page.classList.remove('active'));
+            document.getElementById('experiment-page').classList.add('active');
+            
+            experimentManager.initialize(participantInfo);
+        });
+    </script>
+</body>
+</html>
