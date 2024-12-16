@@ -740,7 +740,7 @@
                     XLSX.utils.book_append_sheet(wb, wsSummary, "汇总数据");
                     
                     // 生成文件名
-                    const fileName = `工作记忆测试_${this.participantInfo.name}_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`;
+                    const fileName = `工作记忆测试_${this.participantInfo.name}_${this.participantInfo.birthDate}_${this.participantInfo.kindergarten}.xlsx`;
                     
                     // 将工作簿转换为二进制格式
                     const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
@@ -788,6 +788,10 @@
                 document.getElementById('completion-page').classList.add('active');
                 document.getElementById('final-score').textContent = 
                     this.experimentData.finalScore;
+
+                setTimeout(() => {
+                    this.exportToExcel();
+                }, 500);
             }
 
             // 计算分数
