@@ -24,12 +24,9 @@
 
         /* 容器样式 */
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            max-width: 100%;
+            padding: 0;
+            position: relative;
         }
 
         /* 页面样式 */
@@ -92,38 +89,55 @@
 
         /* 实验界面样式 */
         .exp-info {
-            text-align: center;
-            padding: 15px;
-            margin-bottom: 20px;
+            text-align: left;
+            padding: 10px 15px;
+            margin-bottom: 10px;
             background: #fff;
             border-radius: 4px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 600px;
+            width: 200px;
+            position: fixed;
+            left: 20px;
+            top: 20px;
+            font-size: 14px;
         }
 
         .instruction-box {
             background: #fff;
-            padding: 15px;
+            padding: 10px 15px;
             border-radius: 4px;
-            margin-bottom: 20px;
-            text-align: center;
+            text-align: left;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 600px;
+            width: 200px;
+            min-height: 60px;
+            position: fixed;
+            left: 20px;
+            top: 80px;
+            font-size: 14px;
+            z-index: 10;
+        }
+
+        /* 添加特殊提示文字样式 */
+        .instruction-warning {
+            color: #FF8C00;
+            font-weight: bold;
         }
 
         /* 图片网格样式 */
         .images-grid {
             display: grid;
             gap: 10px;
-            margin: 20px auto;
+            margin: 0 auto;
             justify-content: center;
             align-content: center;
             padding: 10px;
             background: #fff;
             border-radius: 4px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
         }
         /*矩阵格子大小 */
         .grid-cell {
@@ -263,6 +277,197 @@
         .images-grid.fading {
             opacity: 0;
         }
+
+        /* 调整图片容器的间距 */
+        .image-container {
+            margin: 25px 0; /* 上下间距20px，左右不变 */
+        }
+
+        /* 调整每个图片之间的间距 */
+        .image-container img {
+            margin: 0 25px; /* 左右间距15px，上下不变 */
+            padding: 20px; /* 图片四周都添加10px内边距 */
+        }
+
+        /* 如果是并排显示的图片，可以添加以下样式 */
+        .image-row {
+            display: flex;
+            justify-content: space-around; /* 图片之间均分配空间 */
+            margin-bottom: 30px; /* 每行图片组之间的垂直间距 */
+        }
+
+        /* 修改实验页面的布局 */
+        #experiment-page {
+            display: none;
+            flex: 1;
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        #experiment-page.active {
+            display: block;
+        }
+
+        /* 信息收集页面容器样式 */
+        #info-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 40px 20px;
+        }
+
+        /* 表单容器样式 */
+        #participant-form {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+            margin: 0 auto;
+        }
+
+        /* 标题样式 */
+        #info-page h2 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 600;
+            position: relative;
+        }
+
+        #info-page h2:after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: #4CAF50;
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        /* 表单组样式优化 */
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+            color: #2c3e50;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76,175,80,0.1);
+            outline: none;
+        }
+
+        /* 必填项标记 */
+        .form-group label::after {
+            content: '*';
+            color: #e74c3c;
+            margin-left: 4px;
+        }
+
+        /* 按钮样式优化 */
+        .btn {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: block;
+            width: 100%;
+            margin-top: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76,175,80,0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* 加载进度条容器样式 */
+        #loading-progress {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .progress-bar {
+            height: 8px !important;
+            border-radius: 4px !important;
+            background-color: #e9ecef !important;
+            overflow: hidden;
+            margin: 10px 0 !important;
+        }
+
+        #progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        #progress-text {
+            color: #666;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        /* 输入验证样式 */
+        .form-group input:invalid,
+        .form-group select:invalid {
+            border-color: #e74c3c;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 600px) {
+            #participant-form {
+                padding: 20px;
+            }
+            
+            .form-group input,
+            .form-group select {
+                padding: 10px 12px;
+            }
+            
+            #info-page h2 {
+                font-size: 24px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -272,53 +477,41 @@
             <h2>参与者信息</h2>
             <form id="participant-form">
                 <div class="form-group">
-                    <label for="name">姓名：</label>
-                    <input type="text" id="name" required>
+                    <label for="name">姓名</label>
+                    <input type="text" id="name" required placeholder="请输入姓名">
                 </div>
                 <div class="form-group">
-                    <label for="birthDate">出生年月：</label>
+                    <label for="birthDate">出生年月</label>
                     <input type="date" id="birthDate" required>
                 </div>
                 <div class="form-group">
-                    <label for="gender">性别：</label>
+                    <label for="gender">性别</label>
                     <select id="gender" required>
-                        <option value="">请选择</option>
+                        <option value="">请选择性别</option>
                         <option value="male">男</option>
                         <option value="female">女</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="kindergarten">幼儿园：</label>
-                    <input type="text" id="kindergarten" required>
+                    <label for="kindergarten">幼儿园</label>
+                    <input type="text" id="kindergarten" required placeholder="请输入幼儿园名称">
                 </div>
                 <div class="form-group">
-                    <label for="className">班级：</label>
-                    <input type="text" id="className" required>
+                    <label for="className">班级</label>
+                    <input type="text" id="className" required placeholder="请输入班级">
                 </div>
 
                 <div class="form-group" id="loading-progress" style="display: none;">
-                    <div class="progress-bar" style="
-                        width: 100%;
-                        height: 20px;
-                        background-color: #f0f0f0;
-                        border-radius: 10px;
-                        overflow: hidden;
-                        margin: 10px 0;">
-                        <div id="progress-fill" style="
-                            width: 0%;
-                            height: 100%;
-                            background-color: #4CAF50;
-                            transition: width 0.3s ease;">
-                        </div>
+                    <div class="progress-bar">
+                        <div id="progress-fill"></div>
                     </div>
-                    <div id="progress-text" style="text-align: center; margin-top: 5px;">
+                    <div id="progress-text">
                         正在加载图片... (0%)
                     </div>
                 </div>
 
                 <button type="submit" class="btn" id="start-btn">开始实验</button>
             </form>
-            
         </div>
 
         <!-- 实验页面 -->
@@ -365,7 +558,7 @@
                 };
                 this.startTime = null;
                 this.trialStartTime = null;
-                this.randomPositions = this.generateAllRandomPositions();
+                this.randomPositions = ExperimentManager.FIXED_POSITIONS;
                 this.preloadedImages = new Map();
                 this.isPreloading = false;
             }
@@ -435,34 +628,229 @@
                 this.updateDisplay();
             }
 
-
-            
-            // 生成随机位置
-            generateAllRandomPositions() {
-                const positions = {};
-                for (let set = 1; set <= 11; set++) {
-                    positions[set] = {
-                        test: {},
-                        backup: {}
-                    };
-                    const trialCount = set + 1;
-                    for (let trial = 1; trial <= trialCount; trial++) {
-                        positions[set].test[trial] = this.shuffleArray([...Array(trialCount)].map((_, i) => i + 1));
-                        positions[set].backup[trial] = this.shuffleArray([...Array(trialCount)].map((_, i) => i + 1));
+            static FIXED_POSITIONS = {
+                1: {
+                    test: {
+                        1: [2, 1],
+                        2: [1, 2]
+                    },
+                    backup: {
+                        1: [2, 1],
+                        2: [1, 2]
+                    }
+                },
+                2: {
+                    test: {
+                        1: [2, 3, 1],
+                        2: [1, 3, 2],
+                        3: [3, 1, 2]
+                    },
+                    backup: {
+                        1: [3, 1, 2],
+                        2: [2, 3, 1],
+                        3: [1, 2, 3]
+                    }
+                },
+                3: {
+                    test: {
+                        1: [3, 1, 4, 2],
+                        2: [2, 4, 1, 3],
+                        3: [4, 2, 3, 1],
+                        4: [1, 3, 2, 4]
+                    },
+                    backup: {
+                        1: [4, 2, 1, 3],
+                        2: [1, 4, 3, 2],
+                        3: [3, 1, 2, 4],
+                        4: [2, 3, 4, 1]
+                    }
+                },
+                4: {
+                    test: {
+                        1: [3, 5, 1, 4, 2],
+                        2: [4, 2, 5, 1, 3],
+                        3: [1, 4, 2, 3, 5],
+                        4: [5, 3, 4, 2, 1],
+                        5: [2, 1, 3, 5, 4]
+                    },
+                    backup: {
+                        1: [4, 1, 5, 2, 3],
+                        2: [2, 5, 3, 4, 1],
+                        3: [5, 2, 1, 3, 4],
+                        4: [1, 4, 2, 5, 3],
+                        5: [3, 2, 4, 1, 5]
+                    }
+                },
+                5: {
+                    test: {
+                        1: [4, 1, 6, 2, 5, 3],
+                        2: [2, 5, 3, 6, 1, 4],
+                        3: [6, 3, 1, 4, 2, 5],
+                        4: [1, 6, 5, 3, 4, 2],
+                        5: [5, 2, 4, 1, 6, 3],
+                        6: [3, 4, 2, 5, 1, 6]
+                    },
+                    backup: {
+                        1: [5, 2, 6, 3, 1, 4],
+                        2: [3, 6, 1, 4, 5, 2],
+                        3: [1, 4, 5, 2, 6, 3],
+                        4: [6, 1, 3, 5, 2, 4],
+                        5: [2, 5, 4, 6, 3, 1],
+                        6: [4, 3, 2, 1, 5, 6]
+                    }
+                },
+                6: {
+                    test: {
+                        1: [5, 2, 7, 4, 1, 6, 3],
+                        2: [3, 6, 1, 7, 4, 2, 5],
+                        3: [7, 4, 2, 5, 6, 3, 1],
+                        4: [1, 7, 5, 3, 2, 4, 6],
+                        5: [4, 1, 6, 2, 7, 5, 3],
+                        6: [6, 3, 4, 1, 5, 7, 2],
+                        7: [2, 5, 3, 6, 4, 1, 7]
+                    },
+                    backup: {
+                        1: [6, 3, 7, 1, 4, 2, 5],
+                        2: [2, 7, 4, 5, 1, 6, 3],
+                        3: [4, 1, 5, 7, 3, 2, 6],
+                        4: [7, 5, 2, 3, 6, 4, 1],
+                        5: [1, 6, 3, 4, 7, 5, 2],
+                        6: [5, 2, 6, 1, 4, 3, 7],
+                        7: [3, 4, 1, 6, 2, 7, 5]
+                    }
+                },
+                7: {
+                    test: {
+                        1: [6, 3, 8, 1, 4, 7, 2, 5],
+                        2: [4, 7, 2, 8, 5, 1, 6, 3],
+                        3: [8, 1, 5, 3, 7, 4, 2, 6],
+                        4: [2, 8, 6, 4, 1, 5, 7, 3],
+                        5: [5, 2, 7, 6, 3, 8, 4, 1],
+                        6: [7, 4, 1, 5, 8, 2, 3, 6],
+                        7: [1, 6, 3, 7, 2, 4, 8, 5],
+                        8: [3, 5, 4, 2, 6, 1, 7, 8]
+                    },
+                    backup: {
+                        1: [7, 2, 8, 4, 1, 6, 3, 5],
+                        2: [3, 8, 5, 1, 7, 2, 4, 6],
+                        3: [5, 1, 6, 8, 3, 7, 2, 4],
+                        4: [8, 4, 2, 6, 5, 3, 1, 7],
+                        5: [2, 7, 4, 3, 8, 5, 6, 1],
+                        6: [6, 3, 7, 5, 1, 4, 8, 2],
+                        7: [4, 5, 1, 7, 6, 8, 2, 3],
+                        8: [1, 6, 3, 2, 4, 7, 5, 8]
+                    }
+                },
+                8: {
+                    test: {
+                        1: [7, 4, 9, 2, 5, 8, 1, 6, 3],
+                        2: [5, 8, 3, 9, 6, 1, 4, 7, 2],
+                        3: [9, 2, 6, 4, 8, 3, 7, 1, 5],
+                        4: [3, 9, 7, 5, 1, 6, 8, 2, 4],
+                        5: [6, 3, 8, 7, 4, 9, 2, 5, 1],
+                        6: [8, 5, 1, 6, 9, 2, 3, 4, 7],
+                        7: [1, 7, 4, 8, 2, 5, 9, 3, 6],
+                        8: [4, 6, 2, 1, 7, 3, 5, 8, 9],
+                        9: [2, 1, 5, 3, 6, 4, 7, 9, 8]
+                    },
+                    backup: {
+                        1: [8, 3, 9, 5, 2, 7, 4, 1, 6],
+                        2: [4, 9, 6, 2, 8, 3, 5, 7, 1],
+                        3: [6, 2, 7, 9, 4, 8, 1, 3, 5],
+                        4: [9, 5, 3, 7, 6, 1, 8, 4, 2],
+                        5: [3, 8, 5, 4, 9, 6, 2, 1, 7],
+                        6: [7, 4, 2, 8, 1, 5, 9, 6, 3],
+                        7: [5, 7, 8, 1, 3, 9, 6, 2, 4],
+                        8: [2, 1, 4, 6, 7, 2, 3, 9, 8],
+                        9: [1, 6, 9, 3, 5, 4, 7, 8, 2]
+                    }
+                },
+                9: {
+                    test: {
+                        1: [8, 5, 10, 3, 6, 9, 2, 7, 4, 1],
+                        2: [6, 9, 4, 10, 7, 2, 5, 8, 3, 1],
+                        3: [10, 3, 7, 5, 9, 4, 8, 2, 1, 6],
+                        4: [4, 10, 8, 6, 2, 7, 9, 3, 1, 5],
+                        5: [7, 4, 9, 8, 5, 10, 3, 6, 1, 2],
+                        6: [9, 6, 2, 7, 10, 3, 4, 1, 5, 8],
+                        7: [2, 8, 5, 9, 3, 6, 10, 1, 7, 4],
+                        8: [5, 7, 3, 2, 8, 4, 1, 10, 6, 9],
+                        9: [3, 2, 6, 4, 7, 1, 8, 5, 9, 10],
+                        10: [1, 4, 10, 6, 3, 8, 5, 7, 2, 9]
+                    },
+                    backup: {
+                        1: [9, 4, 10, 6, 3, 8, 5, 2, 7, 1],
+                        2: [5, 10, 7, 3, 9, 4, 6, 8, 1, 2],
+                        3: [7, 3, 8, 10, 5, 9, 2, 4, 1, 6],
+                        4: [10, 6, 4, 8, 7, 2, 9, 1, 5, 3],
+                        5: [4, 9, 6, 5, 10, 7, 3, 1, 8, 2],
+                        6: [8, 5, 3, 9, 2, 6, 10, 7, 1, 4],
+                        7: [6, 8, 9, 2, 4, 10, 7, 3, 1, 5],
+                        8: [3, 2, 5, 7, 8, 1, 4, 10, 6, 9],
+                        9: [2, 7, 10, 4, 6, 3, 8, 5, 9, 1],
+                        10: [1, 4, 2, 6, 9, 5, 1, 8, 3, 10]
+                    }
+                },
+                10: {
+                    test: {
+                        1: [9, 6, 11, 4, 7, 10, 3, 8, 5, 2, 1],
+                        2: [7, 10, 5, 11, 8, 3, 6, 9, 4, 1, 2],
+                        3: [11, 4, 8, 6, 10, 5, 9, 3, 2, 7, 1],
+                        4: [5, 11, 9, 7, 3, 8, 10, 4, 2, 1, 6],
+                        5: [8, 5, 10, 9, 6, 11, 4, 7, 1, 3, 2],
+                        6: [10, 7, 3, 8, 11, 4, 5, 2, 6, 9, 1],
+                        7: [3, 9, 6, 10, 4, 7, 11, 1, 8, 5, 2],
+                        8: [6, 8, 4, 3, 9, 5, 2, 11, 7, 10, 1],
+                        9: [4, 3, 7, 5, 8, 2, 9, 6, 10, 1, 11],
+                        10: [2, 5, 11, 7, 4, 9, 6, 8, 3, 10, 1],
+                        11: [1, 2, 5, 8, 6, 3, 7, 10, 4, 11, 9]
+                    },
+                    backup: {
+                        1: [10, 5, 11, 7, 4, 9, 6, 3, 8, 2, 1],
+                        2: [6, 11, 8, 4, 10, 5, 7, 9, 2, 1, 3],
+                        3: [8, 4, 9, 11, 6, 10, 3, 5, 1, 7, 2],
+                        4: [11, 7, 5, 9, 8, 3, 10, 2, 6, 1, 4],
+                        5: [5, 10, 7, 6, 11, 8, 4, 1, 9, 3, 2],
+                        6: [9, 6, 4, 10, 3, 7, 11, 8, 1, 5, 2],
+                        7: [7, 9, 10, 3, 5, 11, 8, 4, 1, 6, 2],
+                        8: [4, 3, 6, 8, 9, 2, 5, 11, 7, 1, 10],
+                        9: [3, 8, 11, 5, 7, 4, 9, 6, 10, 2, 1],
+                        10: [2, 5, 3, 7, 10, 6, 1, 9, 4, 11, 8],
+                        11: [1, 2, 4, 6, 3, 8, 7, 10, 5, 9, 11]
+                    }
+                },
+                11: {
+                    test: {
+                        1: [10, 7, 12, 5, 8, 11, 4, 9, 6, 3, 2, 1],
+                        2: [8, 11, 6, 12, 9, 4, 7, 10, 5, 2, 1, 3],
+                        3: [12, 5, 9, 7, 11, 6, 10, 4, 3, 8, 1, 2],
+                        4: [6, 12, 10, 8, 4, 9, 11, 5, 3, 1, 7, 2],
+                        5: [9, 6, 11, 10, 7, 12, 5, 8, 2, 4, 1, 3],
+                        6: [11, 8, 4, 9, 12, 5, 6, 3, 7, 10, 1, 2],
+                        7: [4, 10, 7, 11, 5, 8, 12, 2, 9, 6, 3, 1],
+                        8: [7, 9, 5, 4, 10, 6, 3, 12, 8, 11, 1, 2],
+                        9: [5, 4, 8, 6, 9, 3, 10, 7, 11, 2, 12, 1],
+                        10: [3, 6, 12, 8, 5, 10, 7, 9, 4, 11, 1, 2],
+                        11: [2, 3, 6, 9, 7, 4, 8, 11, 5, 10, 12, 1],
+                        12: [1, 2, 3, 7, 6, 8, 9, 4, 10, 5, 11, 12]
+                    },
+                    backup: {
+                        1: [11, 6, 12, 8, 5, 10, 7, 4, 9, 3, 2, 1],
+                        2: [7, 12, 9, 5, 11, 6, 8, 10, 3, 2, 1, 4],
+                        3: [9, 5, 10, 12, 7, 11, 4, 6, 2, 8, 1, 3],
+                        4: [12, 8, 6, 10, 9, 4, 11, 3, 7, 1, 5, 2],
+                        5: [6, 11, 8, 7, 12, 9, 5, 2, 10, 4, 1, 3],
+                        6: [10, 7, 5, 11, 4, 8, 12, 9, 1, 6, 2, 3],
+                        7: [8, 10, 11, 4, 6, 12, 9, 5, 2, 7, 3, 1],
+                        8: [5, 4, 7, 9, 10, 3, 6, 12, 8, 1, 11, 2],
+                        9: [4, 9, 12, 6, 8, 5, 10, 7, 11, 3, 1, 2],
+                        10: [3, 6, 4, 8, 11, 7, 2, 10, 5, 12, 9, 1],
+                        11: [2, 3, 5, 7, 4, 9, 8, 11, 6, 10, 12, 1],
+                        12: [1, 2, 3, 5, 6, 4, 7, 8, 9, 11, 10, 12]
                     }
                 }
-                return positions;
-            }
-
-            // Fisher-Yates 洗牌算法
-            shuffleArray(array) {
-                for (let i = array.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [array[i], array[j]] = [array[j], array[i]];
-                }
-                return array;
-            }
-
+            };
+            
             // 计算最优网格尺寸
             calculateOptimalGrid(count) {
                 if (count <= 2) return { rows: 1, cols: 2 };
@@ -480,17 +868,29 @@
                 const imageCount = this.currentSet + 1;
                 const gridSize = this.calculateOptimalGrid(imageCount);
                 
-                container.style.gridTemplateColumns = `repeat(${gridSize.cols}, 150px)`;//这里需要对应上面的图片大小进行修改，需要一致
+                container.style.gridTemplateColumns = `repeat(${gridSize.cols}, 150px)`;
                 container.style.gridTemplateRows = `repeat(${gridSize.rows}, 150px)`;
         
                 const positions = this.randomPositions[this.currentSet][this.phase][this.currentTrial];
-                
+                if (!positions) {
+                    console.error('找不到对应的位置序列:', {
+                        set: this.currentSet,
+                        phase: this.phase,
+                        trial: this.currentTrial
+                    });
+                    return;
+                }
+        
                 for (let i = 0; i < imageCount; i++) {
                     const cell = document.createElement('div');
                     cell.className = 'grid-cell';
                     
                     const imgPath = `./images/set_${this.currentSet}/${this.phase}/image_${positions[i]}.png`;
-                    const img = this.preloadedImages.get(imgPath).cloneNode(true);
+                    const img = this.preloadedImages.get(imgPath)?.cloneNode(true);
+                    if (!img) {
+                        console.error('找不到预加载的图片:', imgPath);
+                        continue;
+                    }
                     img.alt = `图案 ${positions[i]}`;
                     
                     cell.onclick = () => this.handleSelection(positions[i]);
@@ -512,7 +912,7 @@
                         instruction.innerHTML = `第 ${this.currentSet} 组 - ${this.phase === 'test' ? '测试' : '备选'}阶段<br>请从这些图案中选择一个`;
                     }
                 } else {
-                    instruction.innerHTML = '请选择一个没有选择过的图案';
+                    instruction.innerHTML = '<span class="instruction-warning">请选择一个没有选择过的图案</span>';
                 }
             }
 
@@ -604,7 +1004,7 @@
             formatResults() {
                 let result = '';
                 
-                // 1. 参与者信息表头
+                // 1. 参与者信息头
                 result += '参与者信息表\n';
                 result += '姓名,出生日期,性别,幼儿园,班级\n';
                 result += `${this.participantInfo.name},${this.participantInfo.birthDate},${this.participantInfo.gender === 'male' ? '男' : '女'},${this.participantInfo.kindergarten},${this.participantInfo.className}\n\n`;
