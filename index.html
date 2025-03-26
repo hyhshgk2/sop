@@ -989,9 +989,8 @@
                     });
                     
                     if (selectedCell) {
-                        // 高亮选中的图片
-                        selectedCell.style.boxShadow = isError ? 
-                            '0 0 0 4px #ff5757' : '0 0 0 4px #4CAF50';
+                        // 高亮选中的图片，统一使用深灰色
+                        selectedCell.style.boxShadow = '0 0 0 4px #AAAAAA';
                         
                         // 延迟后移除高亮
                         setTimeout(() => {
